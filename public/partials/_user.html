@@ -1,3 +1,19 @@
 <!-- You are inside ng-controller="mainController as main" -->
 
-user.html {{1 + 1}}
+<h2>Your Markers:</h2>
+
+add a marker:
+<form class="" ng-submit="main.createMarker(marker)">
+  <input type="text" ng-model="marker.title" placeholder="title">
+  <input type="text" ng-model="marker.description" placeholder="description">
+  <input type="text" ng-model="marker.audio" placeholder="audio">
+  <input type="text" ng-model="marker.category" placeholder="category">
+  <button type="submit" name="button">ADD MARKER</button>
+</form>
+
+<button type="submit" ng-click="main.logout(user)">Logout</button>
+
+<div ng-app="ngMap" ng-controller="mapController as map">
+  <ng-map default-style="true" center="current-location" zoom="10">
+  </ng-map>
+</div>
