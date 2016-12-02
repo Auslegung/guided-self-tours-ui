@@ -67,11 +67,14 @@
     // for the add marker route and add
     // a marker to the currrent user
     this.createMarker = function(marker){
+      debugger;
       var marker = {
         title: marker.title,
         description: marker.description,
         audio: marker.audio,
-        category: marker.category
+        category: marker.category,
+        longitude: marker.longitude,
+        latitude: marker.latitude
       }
       return $http({
         url: `${rootUrl}/users/:id/add_marker`,

@@ -8,12 +8,16 @@ add a marker:
   <input type="text" ng-model="marker.description" placeholder="description">
   <input type="text" ng-model="marker.audio" placeholder="audio">
   <input type="text" ng-model="marker.category" placeholder="category">
+  <input type="number" step="any" min="-90" max="90" ng-model="marker.latitude" placeholder="lat">
+  <input type="number" step="any" min="-180" max="180" ng-model="marker.longitude" placeholder="lon">
   <button type="submit" name="button">ADD MARKER</button>
 </form>
 
 <button type="submit" ng-click="main.logout(user)">Logout</button>
 
-<div ng-app="ngMap" ng-controller="mapController as map">
+<!-- <div ng-app="ngMap" ng-controller="mapController as map">
   <ng-map default-style="true" center="current-location" zoom="10">
   </ng-map>
-</div>
+</div> -->
+
+<div ng-controller="mapController as map" id="map_canvas" style="width:100%; height:80vh;"></div>
