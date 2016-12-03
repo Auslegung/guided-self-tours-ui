@@ -1,12 +1,56 @@
+var rootUrl = "http://localhost:3000"
+var app = angular.module('tour');
+app.service('CreateMarker', ['$http', function($http) {
+  this.createMarker = function(marker) {
+    let self = this;
+    self.currentUser = JSON.parse(localStorage.getItem('user'));
+    return $http({
+      url: `${rootUrl}/users/:id/add_marker`,
+      method: 'POST',
+      data: {marker: marker},
+      headers: {
+        'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
+      }
+    })
+    .then(function(res){
+      let markers = self.currentUser.markers;
+      let newMarker = res.config.data.marker;
+      markers.unshift(newMarker); // adds to beginning of array
+    })
+    .catch(function(error){
+      console.log('ERROR ~>', error);
+    })
+  } // end createMarker function
+}]); // end CreateMarker service
+
+app.service('ShowUserMarkers', ['$http', function($http) {
+  this.showUserMarkers = function(user) {
+    let self = this;
+    self.currentUser = JSON.parse(localStorage.getItem('user'));
+    return $http({
+      url: `${rootUrl}/users/:id`,
+      method: 'GET',
+      data: {markers: user.markers}
+      // headers: {
+      //   'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
+      // }
+    })
+    .then(function(user){
+      let markers = user.markers;
+    })
+    .catch(function(err){
+      console.log(err);
+    })
+  } // end this.showUserMarkers function
+}]); // end ShowUserMarkers service
+
 (function(){
-  angular.module('tour')
-  .controller('mainController', mainController);
+  app.controller('mainController', mainController);
 
-  mainController.$inject = ['$scope', '$http', '$state', 'NgMap'];
+  mainController.$inject = ['$scope', '$http', '$state', 'NgMap', 'CreateMarker'];
 
-  function mainController($scope, $http, $state, NgMap) {
+  function mainController($scope, $http, $state, NgMap, createMarker) {
     var self = this;
-    var rootUrl = "http://localhost:3000"
     self.currentUser = JSON.parse(localStorage.getItem('user'));
     // self.currentUser =
     self.newPassword = {};
@@ -67,7 +111,6 @@
     // for the add marker route and add
     // a marker to the currrent user
     this.createMarker = function(marker){
-      debugger;
       var marker = {
         title: marker.title,
         description: marker.description,
