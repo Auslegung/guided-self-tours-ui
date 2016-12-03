@@ -8,7 +8,7 @@ var map;
     // .controller('mapController', ['$http', '$scope', 'CreateMarker'])
       function mapController($http, $scope, CreateMarker, ShowUserMarkers) {
         let self = this,
-        marker,
+        newMarker,
         infowindow;
         function initialize() {
           var latlng = new google.maps.LatLng(37.0902, -95.7129);
@@ -29,18 +29,20 @@ var map;
                      "<option value='music'>music</option>" +
                      "</select> </td></tr>" +
                      "<tr><td></td><td><input type='button' value='Save & Close' onclick='saveData()'/></td></tr>";
-          infowindow = new google.maps.InfoWindow({
-            content: html
-          });
-
+          infowindow = new google.maps.InfoWindow;
+          //
           google.maps.event.addListener(map, "rightclick", function(event) {
-            marker = new google.maps.Marker({
+            newMarker = new google.maps.Marker({
               position: event.latLng,
               map: map
             });
-            google.maps.event.addListener(marker, "click", function() {
-              infowindow.open(map, marker);
+            let infowindow = new google.maps.InfoWindow({
+              content: html
+            });
+            google.maps.event.addListener(newMarker, "click", function() {
+              infowindow.open(map, this); // using `this` instead of `newMarker` opens the correct infowindow onclick
             }); // end addListener
+            infowindow.open(map, newMarker);
           }); // end addListener
           // ShowUserMarkers.showUserMarkers(JSON.parse(localStorage.getItem('user')))
           showAllMarkers();
@@ -54,13 +56,47 @@ var map;
           })
           .then(function(res) {
             for (var i = 0; i < res.data.length; i++) {
-              let lat = res.data[i].latitude;
-              let lng = res.data[i].longitude;
-              let latLng = new google.maps.LatLng(lat, lng);
+              let markerInfo = res.data[i];
+              // add markers to the map corresponding to their lat and lng
               let marker = new google.maps.Marker({
-                position: latLng,
-                map: map
-              }) // end marker object
+                position: {lat: markerInfo.latitude, lng: markerInfo.longitude},
+                map: map,
+                animation: google.maps.Animation.DROP
+              }); // end marker object
+              // create content for infowindow
+              let deleteAndUpdateButtons = '<button class="infowindow-content-bottom-button" type="submit" ng-click="main.deleteMarker(this.marker)">' + // this OR self?
+                                              'DELETE' +
+                                            '</button>' + // end delete button
+                                            '<button class="infowindow-content-bottom-button" type="submit" ng-click="main.updateMarker(this.marker)">' + // MIGHT NEED TO PASS SOMETHING BESIDES this.marker
+                                              'UPDATE' +
+                                            '</button>'; // end update button
+              // if the user_id === currentUser.id, add deleteAndUpdateButtons.  Also, make markers green or something.
+              let content = '<div class="infowindow-content-wrapper">' +
+                              '<div class="infowindow-content-header">' +
+                                '<div class="infowindow-content-header-title">' +
+                                  '<p>' + markerInfo.title + '</p>' +
+                                '</div>' + // end header-title
+                                '<div class="infowindow-content-header-username">' +
+                                  '<p>' + markerInfo.username + '</p>' +
+                                '</div>' + // end header-username
+                                '<div class="infowindow-content-description">' +
+                                  '<p>' + markerInfo.description + '</p>' +
+                                '</div>' + // end description
+                                '<div class="infowindow-content-bottom-wrapper">' +
+                                  // '<audio controls>' +
+                                  //   '<source src="markerInfo.audio" type="audio/ogg">' +
+                                  // '</audio>' +
+                                  deleteAndUpdateButtons +
+                                '</div>' + // end bottom-wrapper
+                              '</div>' + // end header
+                            '</div>'; + // end content-wrapper
+              // attach infowindow to each marker containing its info
+              google.maps.event.addListener(marker, 'click', (function(marker, i) {
+                return function() {
+                  infowindow.setContent(content);
+                  infowindow.open(map, marker);
+                }
+              })(marker, i)); // end addListener
             } // end for loop
           }) // end .then
           .catch(function(err) {
@@ -75,12 +111,15 @@ var map;
           description: escape(document.getElementById("description").value),
           audio: document.getElementById("audio").value,
           category: document.getElementById("category").value,
-          longitude: marker.position.lng(),
-          latitude: marker.position.lat()
+          longitude: newMarker.position.lng(),
+          latitude: newMarker.position.lat()
         }
         CreateMarker.createMarker(location);
-        // infowindow.close();
-      }
+        // Change infowindow content of newly created marker
+
+        // infowindow.close(map, newMarker);
+      } // end saveData function
+
       // load the map
       initialize();
 
