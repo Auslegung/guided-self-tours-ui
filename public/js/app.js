@@ -1,4 +1,4 @@
-var rootUrl = "http://localhost:3000"
+var rootUrl = "https://evening-forest-95483.herokuapp.com/"
 var app = angular.module('tour');
 app.service('CreateMarker', ['$http', function($http) {
   this.createMarker = function(marker) {
