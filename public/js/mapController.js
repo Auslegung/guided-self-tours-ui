@@ -105,7 +105,6 @@ var map;
         } // end showAllMarkers function
 
       window.saveData = function() {
-        debugger;
         var location = {
           title: escape(document.getElementById("title").value),
           description: escape(document.getElementById("description").value),
@@ -116,8 +115,6 @@ var map;
         }
         CreateMarker.createMarker(location);
         // Change infowindow content of newly created marker
-
-        // infowindow.close(map, newMarker);
       } // end saveData function
 
       // load the map
