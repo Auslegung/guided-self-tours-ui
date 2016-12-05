@@ -64,10 +64,10 @@ var map;
                 animation: google.maps.Animation.DROP
               }); // end marker object
               // create content for infowindow
-              let deleteAndUpdateButtons = '<button class="infowindow-content-bottom-button" type="submit" ng-click="main.deleteMarker(this.marker)">' + // this OR self?
+              let deleteAndUpdateButtons = '<button class="infowindow-content-bottom-button"  ng-click="map.deleteMarker()">' + // this OR self?
                                               'DELETE' +
                                             '</button>' + // end delete button
-                                            '<button class="infowindow-content-bottom-button" type="submit" ng-click="main.updateMarker(this.marker)">' + // MIGHT NEED TO PASS SOMETHING BESIDES this.marker
+                                            '<button class="infowindow-content-bottom-button" type="submit" ng-click="map.updateMarker(this.marker)">' + // MIGHT NEED TO PASS SOMETHING BESIDES this.marker
                                               'UPDATE' +
                                             '</button>'; // end update button
               // if the user_id === currentUser.id, add deleteAndUpdateButtons.  Also, make markers green or something.
@@ -117,8 +117,27 @@ var map;
         // Change infowindow content of newly created marker
       } // end saveData function
 
+      this.updateMarker = function() {
+        console.log('clicked');
+      }
+
+      this.deleteMarker = function(index, id, marker_id) {
+        console.log('clicked');
+        // self.markers.splice(index, 1);
+        return $http({
+          url: `${rootUrl}/users/:id/remove_marker/:marker_id`,
+          method: 'DELETE',
+          // data: {markerId: markerId}
+        })
+        .then(function(res) {
+          console.log(res);
+        })
+        .catch(function(err) {
+          console.log(err);
+        })
+      }
       // load the map
       initialize();
 
-  }
+  } // end mapController function
 })();
