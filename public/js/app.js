@@ -2,8 +2,7 @@ var rootUrl = "https://evening-forest-95483.herokuapp.com/"
 var app = angular.module('tour');
 app.service('CreateMarker', ['$http', function($http) {
   this.createMarker = function(marker) {
-    let self = this;
-    self.currentUser = JSON.parse(localStorage.getItem('user'));
+    let self = this
     return $http({
       url: `${rootUrl}/users/:id/add_marker`,
       method: 'POST',
@@ -13,6 +12,7 @@ app.service('CreateMarker', ['$http', function($http) {
       }
     })
     .then(function(res){
+      self.currentUser = JSON.parse(localStorage.getItem('user'));
       let markers = self.currentUser.markers;
       let newMarker = res.config.data.marker;
       markers.unshift(newMarker); // adds to beginning of array
@@ -26,7 +26,7 @@ app.service('CreateMarker', ['$http', function($http) {
 app.service('ShowUserMarkers', ['$http', function($http) {
   this.showUserMarkers = function(user) {
     let self = this;
-    self.currentUser = JSON.parse(localStorage.getItem('user'));
+    // self.currentUser = JSON.parse(localStorage.getItem('user'));
     return $http({
       url: `${rootUrl}/users/:id`,
       method: 'GET',
@@ -51,8 +51,6 @@ app.service('ShowUserMarkers', ['$http', function($http) {
 
   function mainController($scope, $http, $state, NgMap, createMarker) {
     var self = this;
-    self.currentUser = JSON.parse(localStorage.getItem('user'));
-    // self.currentUser =
     self.newPassword = {};
 
     // This method will hit the rails API
@@ -88,6 +86,7 @@ app.service('ShowUserMarkers', ['$http', function($http) {
         data: {user: user}
       })
       .then(function(res){
+        debugger;
         self.currentUser = res.data.user
         localStorage.setItem('token', JSON.stringify(res.data.token))
         localStorage.setItem('user', JSON.stringify(res.data.user));
@@ -129,7 +128,7 @@ app.service('ShowUserMarkers', ['$http', function($http) {
         }
       })
       .then(function(res){
-        // self.currentUser = JSON.parse(localStorage.getItem('user'));
+        self.currentUser = JSON.parse(localStorage.getItem('user'));
         let markers = self.currentUser.markers;
         let newMarker = res.config.data.marker;
         markers.unshift(newMarker); // adds to beginning of array
